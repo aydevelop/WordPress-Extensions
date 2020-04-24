@@ -11,3 +11,11 @@
 */
 
 
+function cptt_enqueue_scripts_styles() {
+    wp_register_style('cptt_style', plugins_url().'/CustomPostTypes+Taxonomy/style.css');
+    wp_enqueue_style('cptt_style');
+
+    wp_register_script('cptt_script', plugins_url().'/CustomPostTypes+Taxonomy/script.js');
+    wp_enqueue_script('cptt_script');
+}
+add_action('wp_enqueue_scripts', 'cptt_enqueue_scripts_styles');

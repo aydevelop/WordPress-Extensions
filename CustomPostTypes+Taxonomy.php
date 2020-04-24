@@ -6,16 +6,17 @@
     Author: juwric
     Author URI: http://juwric.info
     Version: 1.0.0
-    Text Domain: juwric
+    Text Domain: cptt
     Licence: GPL
 */
 
-
 function cptt_enqueue_scripts_styles() {
-    wp_register_style('cptt_style', plugins_url().'/CustomPostTypes+Taxonomy/style.css');
-    wp_enqueue_style('cptt_style');
+    wp_register_style( 'cptt_style', WP_PLUGIN_URL . '/CustomPostTypes+Taxonomy/style.css' );
+    wp_enqueue_style( 'cptt_style');
 
-    wp_register_script('cptt_script', plugins_url().'/CustomPostTypes+Taxonomy/script.js');
-    wp_enqueue_script('cptt_script');
+    wp_register_script( 'cptt_script', WP_PLUGIN_URL . '/CustomPostTypes+Taxonomy/script.js' );
+    wp_enqueue_script( 'cptt_script' );
 }
 add_action('wp_enqueue_scripts', 'cptt_enqueue_scripts_styles');
+
+require_once(WP_PLUGIN_DIR . '/CustomPostTypes+Taxonomy/register.php');

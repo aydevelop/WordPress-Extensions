@@ -12,8 +12,15 @@
 
 function frp_add_post_link ( $content ) {
     if( is_user_logged_in() ){
-        if( is_single() || is_home() ){
-            return "<p><a class='frp_post_link' href='#'>&#9733; <span> ".__( "Add to favourites", "frp" )."</span> &#9733;</a></p>" . $content;
+        if( is_single()){
+
+            global $post;
+            $favorites = get_user_meta( wp_get_current_user()->ID, "frp_favorites" );
+            if( !in_array( $post->ID, $favorites ) ){ 
+                return "<p><a data-action='add' class='frp_post_link' href='#'>&#9733; <span> ".__( "Add to Favourites", "frp" )."</span> &#9733;</a></p>" . $content;
+            }else{
+                return "<p><a data-action='del' class='frp_post_link' href='#'>&#9733; <span> ".__( "Delete from Favourites", "frp" )."</span> &#9733;</a></p>" . $content;
+            }
         }        
         return $content;
 
@@ -37,14 +44,25 @@ function frp_enqueue_scripts_styles ( $content ) {
 }
 add_action('wp_enqueue_scripts', 'frp_enqueue_scripts_styles');
 
-function wp_ajax_wf_test () {
-    
+function wp_ajax_wf_add () {    
     if(!wp_verify_nonce( $_POST['nonce'] )){
-        echo "error";
+        echo "Error";
     }
 
-    echo $_POST["postId"];
+    $post_id = (int)$_POST["postId"];
+    $user_id = wp_get_current_user()->ID;
+    $favorites = get_user_meta( $user_id, "frp_favorites" );
 
-    wp_die();
+    if( in_array( $post_id, $favorites ) ){ wp_die("Is added"); }
+    add_user_meta( $user_id, "frp_favorites", $post_id);
+    wp_die("Added");
 }
-add_action('wp_ajax_frp', 'wp_ajax_wf_test');
+add_action('wp_ajax_frp_add', 'wp_ajax_wf_add');
+
+function wp_ajax_wf_del () { 
+    $post_id = (int)$_POST["postId"];
+    $user_id = wp_get_current_user()->ID; 
+    delete_user_meta( $user_id, "frp_favorites", $post_id);
+    wp_die("Deleted");
+}
+add_action('wp_ajax_frp_del', 'wp_ajax_wf_del');

@@ -10,11 +10,11 @@ jQuery( document ).ready(function($) {
              url: frp_obj.url,
              data: {
                  nonce: frp_obj.nonce,
-                 action: 'frp',
+                 action: 'frp_' + $(_this).data('action'),
                  postId: frp_obj.postId
              },
              success: function(res){
-                 console.log(res);
+                location.reload();
              },
              error: function(error){
                  console.log("error " + error);

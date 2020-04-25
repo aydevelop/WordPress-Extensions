@@ -44,6 +44,11 @@ function frp_enqueue_scripts_styles ( $content ) {
 }
 add_action('wp_enqueue_scripts', 'frp_enqueue_scripts_styles');
 
+function frp_admin_enqueue_scripts_styles() {
+    wp_enqueue_script( 'frp_admin_script', plugins_url("script-admin.js", __FILE__), array('jquery'), null, true );
+}
+add_action('admin_enqueue_scripts', 'frp_admin_enqueue_scripts_styles');
+
 function wp_ajax_wf_add () {    
     if(!wp_verify_nonce( $_POST['nonce'] )){
         echo "Error";
@@ -66,3 +71,31 @@ function wp_ajax_wf_del () {
     wp_die("Deleted");
 }
 add_action('wp_ajax_frp_del', 'wp_ajax_wf_del');
+
+function wfm_show_favorites_dashboard() {
+    $user_id = wp_get_current_user()->ID; 
+    $favorites = get_user_meta( $user_id, "frp_favorites" );
+
+    if(empty($favorites)){
+        echo __("Favorite Post List is empty");
+        return;
+    }
+
+    echo "<ul>";
+    foreach($favorites as $fv) {
+        echo "<li>";
+
+        $link = get_permalink( $fv );
+        $title = get_the_title( $fv );
+        echo "<a target='_blank' href='" . $link . "'>" . $title . "</a>";
+        echo "<span><a class='fav_del' data-post='" . $fv . "' style='color: red; margin-left: 10px' href='#'>&#10008;</a> </span>";
+        echo "</li>";
+    }
+    echo "</ul>";
+}
+
+function add_dashboard_widgets(){
+    $name = __("Favorite Post List");
+    wp_add_dashboard_widget( 'wfm_favorites_dashboard', $name, "wfm_show_favorites_dashboard");
+}
+add_action('wp_dashboard_setup', 'add_dashboard_widgets');

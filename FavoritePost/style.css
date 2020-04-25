@@ -1,3 +1,7 @@
-h1{
+.frp_post_link{
+    color: red;
+}
+
+.frp_post_link span{
     color: black;
 }

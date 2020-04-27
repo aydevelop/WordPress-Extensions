@@ -46,6 +46,13 @@ add_action('wp_enqueue_scripts', 'frp_enqueue_scripts_styles');
 
 function frp_admin_enqueue_scripts_styles() {
     wp_enqueue_script( 'frp_admin_script', plugins_url("script-admin.js", __FILE__), array('jquery'), null, true );
+
+    wp_localize_script( 'frp_admin_script', 'frp_admin_obj', 
+        array(
+                'url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce()
+            )
+    );
 }
 add_action('admin_enqueue_scripts', 'frp_admin_enqueue_scripts_styles');
 
@@ -72,6 +79,14 @@ function wp_ajax_wf_del () {
 }
 add_action('wp_ajax_frp_del', 'wp_ajax_wf_del');
 
+function wp_ajax_wf_del_all () { 
+    $post_id = (int)$_POST["postId"];
+    $user_id = wp_get_current_user()->ID; 
+    delete_user_meta( $user_id, "frp_favorites");
+    wp_die("Deleted");
+}
+add_action('wp_ajax_frp_del_all', 'wp_ajax_wf_del_all');
+
 function wfm_show_favorites_dashboard() {
     $user_id = wp_get_current_user()->ID; 
     $favorites = get_user_meta( $user_id, "frp_favorites" );
@@ -88,10 +103,14 @@ function wfm_show_favorites_dashboard() {
         $link = get_permalink( $fv );
         $title = get_the_title( $fv );
         echo "<a target='_blank' href='" . $link . "'>" . $title . "</a>";
-        echo "<span><a class='fav_del' data-post='" . $fv . "' style='color: red; margin-left: 10px' href='#'>&#10008;</a> </span>";
-        echo "</li>";
+        echo "<span><a class='frp_fav_del' data-post='" . $fv . "' style='color: red; margin-left: 10px' href='#'>&#10008;</a> </span>";
+        echo "</li>";       
     }
     echo "</ul>";
+    echo "<input style='float: right' type='submit' name='save' id='frp_clear_list' class='button button-primary' value='Clear list'>";
+    echo "<a href='#'></a>";
+    echo "</br>";
+    echo "</br>";
 }
 
 function add_dashboard_widgets(){

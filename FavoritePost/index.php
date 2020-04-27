@@ -108,7 +108,7 @@ function wfm_show_favorites_dashboard() {
     }
     echo "</ul>";
     echo "<input style='float: right' type='submit' name='save' id='frp_clear_list' class='button button-primary' value='Clear list'>";
-    echo "<a href='#'></a>";
+    
     echo "</br>";
     echo "</br>";
 }
@@ -118,3 +118,9 @@ function add_dashboard_widgets(){
     wp_add_dashboard_widget( 'wfm_favorites_dashboard', $name, "wfm_show_favorites_dashboard");
 }
 add_action('wp_dashboard_setup', 'add_dashboard_widgets');
+
+require_once __DIR__ . '/FRP_Fav_Widget.php';
+function frp_widgets_init(){
+    register_widget( 'FRP_Fav_Widget' );
+}
+add_action("widgets_init", "frp_widgets_init");
